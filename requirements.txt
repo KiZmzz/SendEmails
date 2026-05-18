@@ -1,5 +1,5 @@
 openpyxl
 PyQt6
-PyQt-Fluent-Widgets
-PyQtWebEngine
+PyQt6-WebEngine
+PyQt6-Fluent-Widgets
 keyring

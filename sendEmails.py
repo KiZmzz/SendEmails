@@ -20,10 +20,10 @@ def get_resource_path(relative_path):
 
 import openpyxl
 import keyring
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QUrl, QTimer, QSize
-from PyQt5.QtGui import QIcon, QDesktopServices, QFont, QTextCharFormat, QColor
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QUrl, QTimer, QSize
+from PyQt6.QtGui import QIcon, QDesktopServices, QFont, QTextCharFormat, QColor
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QFileDialog, QStackedWidget, QColorDialog
 )
 
@@ -498,11 +498,11 @@ class WidgetBase(ScrollArea):
         self.view = QWidget(self)
         self.vBoxLayout = QVBoxLayout(self.view)
         
-        self.titleLabel = TitleLabel(text, self.view)
+        self.titleLabel = SubtitleLabel(text, self.view)
         self.vBoxLayout.addWidget(self.titleLabel)
-        self.vBoxLayout.setContentsMargins(36, 36, 36, 36)
-        self.vBoxLayout.setSpacing(18)
-        self.vBoxLayout.setAlignment(Qt.AlignTop)
+        self.vBoxLayout.setContentsMargins(36, 32, 36, 36)
+        self.vBoxLayout.setSpacing(8)
+        self.vBoxLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
         self.setWidget(self.view)
         self.setWidgetResizable(True)
@@ -626,7 +626,7 @@ class AccountInterface(WidgetBase):
 
         # Graph login status
         self.graphStatusBadge = InfoBadge.info("未授权", self.graphCard)
-        graphLayout.addWidget(self.graphStatusBadge, alignment=Qt.AlignLeft)
+        graphLayout.addWidget(self.graphStatusBadge, alignment=Qt.AlignmentFlag.AlignLeft)
         
         self.vBoxLayout.addWidget(self.graphCard)
 
@@ -1167,6 +1167,9 @@ class EmailSenderApp(FluentWindow):
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
         
+        # 修正内容区顶部间距，去掉额外偏移，由 vBoxLayout 控制
+        self.widgetLayout.setContentsMargins(0, 0, 0, 0)
+        
         # SubInterfaces
         self.accountInterface = AccountInterface(self)
         self.contentInterface = ContentInterface(self)
@@ -1183,6 +1186,29 @@ class EmailSenderApp(FluentWindow):
         self.addSubInterface(self.sendInterface, FIF.SEND, "收件人与发送")
         
         self.navigationInterface.setExpandWidth(220)
+        
+        # 移除导航面板中的返回按钮和标题文字，回收空间
+        panel = self.navigationInterface.panel
+        btn = panel.returnButton
+        # 从所有父布局中彻底移除该按钮
+        for p_layout in (panel.layout(),):
+            for i in range(p_layout.count()):
+                sub = p_layout.itemAt(i)
+                if sub and sub.layout():
+                    sub_layout = sub.layout()
+                    for j in range(sub_layout.count()):
+                        item = sub_layout.itemAt(j)
+                        if item and item.widget() == btn:
+                            sub_layout.takeAt(j)
+                            break
+        btn.setParent(None)
+        btn.deleteLater()
+        
+        # 移除 titleBar 中的标题文字，缩小高度
+        tb = self.titleBar
+        tb.titleLabel.setParent(None)
+        tb.titleLabel.deleteLater()
+        tb.setFixedHeight(32)
 
     def start_sending(self):
         if not self.sendInterface.recipients:
@@ -1250,16 +1276,8 @@ class EmailSenderApp(FluentWindow):
 
 
 if __name__ == '__main__':
-    # Enable high DPI scaling
-    try:
-        QApplication.setHighDpiScaleFactorRoundingPolicy(
-            Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    except AttributeError:
-        pass
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-
     app = QApplication(sys.argv)
+    # High DPI is enabled by default in PyQt6
     
     # 设置主题颜色
     setTheme(Theme.LIGHT)

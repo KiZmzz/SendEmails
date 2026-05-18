@@ -29,7 +29,14 @@ jobs:
     - name: Build EXE with PyInstaller
       # Use --onedir to avoid long extraction times for PyQtWebEngine on startup
       run: |
-        pyinstaller --noconfirm --onedir --windowed --name "SendEmailsTool" --add-data "editor.html;." --add-data "wangeditor.min.js;." --add-data "wangeditor.css;." sendEmails.py
+        pyinstaller --noconfirm --onedir --windowed --name "SendEmailsTool" `
+          --add-data "editor.html;." `
+          --add-data "wangeditor.min.js;." `
+          --add-data "wangeditor.css;." `
+          --collect-all qfluentwidgets `
+          --hidden-import PyQt6.QtWebEngineWidgets `
+          --hidden-import PyQt6.sip `
+          sendEmails.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4

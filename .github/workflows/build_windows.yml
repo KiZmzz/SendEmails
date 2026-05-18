@@ -1,0 +1,38 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+
+    - name: Build EXE with PyInstaller
+      # Use --onedir to avoid long extraction times for PyQtWebEngine on startup
+      run: |
+        pyinstaller --noconfirm --onedir --windowed --name "SendEmailsTool" --add-data "editor.html;." --add-data "wangeditor.min.js;." --add-data "wangeditor.css;." sendEmails.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: SendEmailsTool-Windows
+        path: dist/SendEmailsTool/

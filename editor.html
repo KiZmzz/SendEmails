@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="wangeditor.css" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+        }
+        #toolbar-container {
+            border-bottom: 1px solid #e8e8e8;
+            background-color: #f8fafc;
+        }
+        #editor-container {
+            flex: 1;
+            overflow-y: hidden;
+            min-height: 350px;
+        }
+        /* Make fonts consistent */
+        .w-e-text-container {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
+            font-size: 15px !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar-container"></div>
+    <div id="editor-container"></div>
+
+    <script src="wangeditor.min.js"></script>
+    <script>
+        const { createEditor, createToolbar } = window.wangEditor;
+
+        // 编辑器配置
+        const editorConfig = {
+            placeholder: '输入正文',
+            MENU_CONF: {
+                uploadImage: {
+                    // 将上传的图片直接转为 base64 内嵌在邮件源码中，无需配置服务器地址
+                    base64LimitSize: 10 * 1024 * 1024 // 10MB
+                }
+            }
+        };
+
+        // 创建编辑器
+        const editor = createEditor({
+            selector: '#editor-container',
+            html: '',
+            config: editorConfig,
+            mode: 'default', // 'default' 或 'simple'
+        });
+
+        // 工具栏配置
+        const toolbarConfig = {
+            excludeKeys: [
+                'fullScreen' // 邮件编辑一般不需要全屏
+            ]
+        };
+
+        // 创建工具栏
+        const toolbar = createToolbar({
+            editor,
+            selector: '#toolbar-container',
+            config: toolbarConfig,
+            mode: 'default',
+        });
+
+        // 暴露给 PyQt 调用的接口
+        function getHtmlContent() {
+            return editor.getHtml();
+        }
+        function setHtmlContent(html) {
+            editor.setHtml(html);
+        }
+    </script>
+</body>
+</html>

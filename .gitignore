@@ -1,0 +1,30 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Project specifics
+accounts.json
+templates.json
+
+# PyInstaller
+build/
+dist/
+*.spec
+*.manifest
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.DS_Store
+.macos/

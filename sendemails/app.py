@@ -1,3 +1,5 @@
+import sys
+
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QUrl
 from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtWidgets import QApplication
@@ -15,6 +17,7 @@ from .workers import EmailSendWorker
 class EmailSenderApp(FluentWindow):
     def __init__(self):
         super().__init__()
+        self._disable_windows_mica_background()
         self.setWindowTitle("批量邮件发送工具")
         self.setWindowIcon(QIcon(str(get_resource_path("app.ico"))))
         self.setMinimumSize(1200, 700)
@@ -25,6 +28,7 @@ class EmailSenderApp(FluentWindow):
         self.sendInterface = SendInterface(self)
 
         self.initNavigation()
+        self.sendInterface.sendRequested.connect(self.start_sending)
         self.widgetLayout.setContentsMargins(0, 0, 0, 0)
         
         # 调整导航和标题栏
@@ -51,6 +55,16 @@ class EmailSenderApp(FluentWindow):
         if hasattr(tb, "iconLabel"):
             tb.iconLabel.hide()
         tb.setFixedHeight(32)
+
+    def _disable_windows_mica_background(self):
+        if sys.platform != "win32":
+            return
+
+        if hasattr(self, "setMicaEffectEnabled"):
+            self.setMicaEffectEnabled(False)
+
+        if hasattr(self, "setCustomBackgroundColor"):
+            self.setCustomBackgroundColor("#f5f7fb", "#202020")
 
     def initNavigation(self):
         self.addSubInterface(self.accountInterface, FIF.SETTING, "账号设置", NavigationItemPosition.TOP)

@@ -15,6 +15,7 @@ templates.json
 build/
 dist/
 *.spec
+!SendEmailsTool.spec
 *.manifest
 
 # Byte-compiled / optimized / DLL files

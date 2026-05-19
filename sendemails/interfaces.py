@@ -32,7 +32,7 @@ class WidgetBase(ScrollArea):
         
         self.titleLabel = SubtitleLabel(text, self.view)
         self.vBoxLayout.addWidget(self.titleLabel)
-        self.vBoxLayout.setContentsMargins(36, 32, 36, 36)
+        self.vBoxLayout.setContentsMargins(36, 12, 36, 36)
         self.vBoxLayout.setSpacing(8)
         self.vBoxLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
@@ -432,7 +432,7 @@ class ContentInterface(WidgetBase):
 
         layout.addWidget(StrongBodyLabel("邮件主题", card))
         self.subjectEdit = LineEdit(card)
-        self.subjectEdit.setText("邮件测试")
+        self.subjectEdit.setText("")
         layout.addWidget(self.subjectEdit)
 
         layout.addWidget(StrongBodyLabel("邮件正文", card))

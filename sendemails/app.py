@@ -8,6 +8,7 @@ from qfluentwidgets import (
 
 from .constants import EMAIL_PROVIDERS
 from .interfaces import AccountInterface, ContentInterface, SendInterface
+from .utils import get_resource_path
 from .workers import EmailSendWorker
 
 
@@ -15,6 +16,7 @@ class EmailSenderApp(FluentWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("批量邮件发送工具")
+        self.setWindowIcon(QIcon(str(get_resource_path("app.ico"))))
         self.setMinimumSize(1200, 700)
         self.resize(1200, 780)
         
@@ -23,6 +25,7 @@ class EmailSenderApp(FluentWindow):
         self.sendInterface = SendInterface(self)
 
         self.initNavigation()
+        self.widgetLayout.setContentsMargins(0, 0, 0, 0)
         
         # 调整导航和标题栏
         self.navigationInterface.setExpandWidth(220)
@@ -45,6 +48,8 @@ class EmailSenderApp(FluentWindow):
         tb = self.titleBar
         tb.titleLabel.setParent(None)
         tb.titleLabel.deleteLater()
+        if hasattr(tb, "iconLabel"):
+            tb.iconLabel.hide()
         tb.setFixedHeight(32)
 
     def initNavigation(self):
